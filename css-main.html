@@ -36,7 +36,7 @@ thead {
   background-color: #0078D7;
   color: white;
   font-weight: 600;
-  font-size: 1.1rem;
+ // font-size: 1.1rem;
 
    position: sticky;
   top: 0;
@@ -52,13 +52,14 @@ th, td {
   padding: 12px 16px;
   vertical-align: top;
   word-wrap: break-word;
-  font-size: 1.1rem;
+ // font-size: 1.1rem;
   transition: background-color 0.2s ease;
+  text-align: left; 
 }
 
 th .sort-arrow {
   margin-left: 6px;
-  font-size: 0.8rem;
+ // font-size: 1rem;
   user-select: none;
   display: inline-block;  /* belangrijk, anders kan het "content" wegvallen */
   width: 12px;            /* fix breedte zodat de pijltjes zichtbaar zijn */
@@ -84,7 +85,7 @@ tbody tr:hover {
 /******************/
 
 button svg {
-   width: 20px;
+  width: 20px;
   height: 20px;
   stroke: currentColor;
   pointer-events: none;
@@ -93,12 +94,12 @@ button svg {
 button svg * {
   pointer-events: none;
 }
-/* Floating Add button */
-#btn-add {
+/* Floating Action Buttons (Add, Increase Font, Decrease Font) */
+#btn-add,
+#btn-increase,
+#btn-decrease {
   position: fixed;
-  bottom: 16px;
   right: 16px;
-  z-index: 200;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -110,19 +111,40 @@ button svg * {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease,
+    opacity 0.3s ease;
   opacity: 0.7;
+  z-index: 200;
 }
 
-#btn-add:hover {
+/*#btn-add:hover,
+#btn-encrease:hover,
+#btn-decrease:hover {
   background: rgba(0, 120, 215, 0.85);
   opacity: 1;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
-}
+}*/
 
-#btn-add:active {
+#btn-add.pressed,
+#btn-increase.pressed,
+#btn-decrease.pressed {
   background: rgba(0, 90, 158, 0.85);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Positioning: stack vertically above each other */
+#btn-add {
+  bottom: 128px;
+}
+
+#btn-increase {
+  bottom: 72px; /* 72 + 48 + 8 spacing */
+}
+
+#btn-decrease {
+  bottom: 16px; /* 16 + 48 + 8 spacing */
 }
 
 #action-buttons {
@@ -217,7 +239,7 @@ button svg * {
   border-style: solid;
   border-image-slice: 1;
   padding: 10px 14px;
-  font-size: 1.1rem;
+ // font-size: 1.1rem;
   outline-offset: 2px;
   outline-color: transparent;
   transition: box-shadow 0.25s ease, background-color 0.25s ease;
@@ -234,7 +256,7 @@ button svg * {
   width: 100%;
   border-style: none;
   padding: 10px 14px;
-  font-size: 1.1rem;
+//  font-size: 1.1rem;
   outline-offset: 2px;
   outline-color: transparent;
   background: #fafafa;
@@ -327,6 +349,15 @@ button svg * {
 /***** MEDIA QUERIES *****/
 /*************************/
 
+@media (hover: hover) and (pointer: fine) {
+  #btn-add:hover,
+  #btn-increase:hover,
+  #btn-decrease:hover {
+    background: rgba(0, 120, 215, 0.85);
+    opacity: 1;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+  }
+}
 
 /* Responsive for smaller screens */
 @media (max-width: 480px) {
@@ -339,7 +370,6 @@ button svg * {
   }
   
   th, td {
-    font-size: 1rem;
     padding: 10px 12px;
   }
 }

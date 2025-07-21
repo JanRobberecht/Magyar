@@ -4,6 +4,27 @@ var data = []
 var sort = ""
 var timer = 0
 var lastScrollTop = 0;
+var fontSizes = {
+  arrow: "1.0rem",
+  th: "1.1rem",
+  td: "1.1rem",
+  input: "1.1rem",
+  div: "1.1rem"
+}
+const svgPen = `
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+  </svg>
+`;
+
+const svgFilter = `
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+    <polygon points="3 5 21 5 14 12 14 19 10 21 10 12 3 5" />
+  </svg>
+`;
 
 
 /***************************/
@@ -20,6 +41,8 @@ function readAll() {
     data = response;
     sort = "hungarianAZ"
     filterAndSort()
+    closeSpinner()
+    closeInputBox()
   })
   .readAll();
 }
@@ -46,8 +69,11 @@ function showAll(processed) {
      tbody.appendChild(row)
   })
 
-  closeSpinner()
-  closeInputBox()
+  let elements = document.querySelectorAll("th, th.sort-arrow, td, input, div[contenteditable='true']");
+  elements.forEach(el => {
+    setFontSizeRem(el)
+  })
+
 }
 
 function createOne() {
@@ -83,6 +109,8 @@ function deleteOne() {
   
     data = response;
     filterAndSort()
+    closeSpinner()
+    closeInputBox()
   })
   .deleteOne(id);
 }
@@ -114,6 +142,8 @@ function saveOne() {
 
     data = response;
     filterAndSort()
+    closeSpinner()
+    closeInputBox()
 
 
   })
@@ -135,10 +165,13 @@ function filterAndSort() {
   console.log(processed)
 
   if (term) {
+    document.querySelector("#btn-add").innerHTML = svgFilter
     processed = data.filter(row => {
       return row[1].toLowerCase().includes(lowerTerm) ||
             row[2].toLowerCase().includes(lowerTerm);
     });
+  } else {
+    document.querySelector("#btn-add").innerHTML = svgPen
   }
 
   switch (sort) {
@@ -211,6 +244,67 @@ function evaluateSort(e) {
 /***** LAYOUT OPERATIONS *****/
 /*****************************/
 
+  
+function setFontSizeRem(el, newSize = "") {
+  let size;
+
+  if (el.tagName === 'TH') {
+    if (el.classList.contains('sort-arrow')) {
+      size = newSize || fontSizes.arrow;
+      if (newSize) fontSizes.arrow = newSize;
+    } else {
+      size = newSize || fontSizes.th;
+      if (newSize) fontSizes.th = newSize;
+    }
+  }
+  if (el.tagName === 'TD') {
+    size = newSize || fontSizes.td;
+    if (newSize) fontSizes.td = newSize;
+  }
+  
+  if (el.tagName === 'INPUT') {
+    size = newSize || fontSizes.input;
+    if (newSize) fontSizes.input = newSize;
+  }
+  
+  if (el.tagName === 'DIV') {
+    size = newSize || fontSizes.editable;
+    if (newSize) fontSizes.editable = newSize;
+  }
+
+  if (size) el.style.fontSize = size;
+}
+
+
+function increaseFontSizeRem() {
+
+ let step = 0.1
+ let elements = document.querySelectorAll("th, th.sort-arrow, td, input, div[contenteditable='true']");
+
+  elements.forEach(el => {
+    let current = window.getComputedStyle(el).fontSize;
+    let fontSizePx = parseFloat(current);               // current size in px
+    let rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize); // base size (usually 16px)
+    let currentRem = fontSizePx / rootFontSize;         // convert px to rem
+    let newRem = (currentRem + step).toFixed(2);        // increase in rem
+    setFontSizeRem(el, newRem + "rem")
+  });
+}
+
+function decreaseFontSizeRem() {
+  let step = 0.1
+  let elements = document.querySelectorAll("th, td, input, div[contenteditable='true']");
+
+  elements.forEach(el => {
+    const current = window.getComputedStyle(el).fontSize;
+    const fontSizePx = parseFloat(current);               // current size in px
+    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize); // base size (usually 16px)
+    const currentRem = fontSizePx / rootFontSize;         // convert px to rem
+    const newRem = (currentRem - step).toFixed(2);        // increase in rem
+    setFontSizeRem(el, newRem + "rem")
+  });
+}
+
 function showInputBox(first = "") {
 
   document.querySelector("#input-box").style.display = "block"
@@ -222,7 +316,6 @@ function showInputBox(first = "") {
   } else {
     document.querySelector("#btn-delete").style.display = "none"
   }
-
 }
 
 function closeInputBox() {
@@ -249,10 +342,36 @@ function closeSpinner() {
 /****** EVENT HANDLERS ******/
 /****************************/
 
+['btn-add', 'btn-increase', 'btn-decrease'].forEach(id => {
+    const btn = document.getElementById(id);
+    btn.addEventListener('mousedown', () => {
+      btn.classList.add('pressed');
+    });
+    btn.addEventListener('mouseup', () => {
+      btn.classList.remove('pressed');
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.classList.remove('pressed');
+    });
+    // Voor touchscreens
+    btn.addEventListener('touchstart', () => {
+      btn.classList.add('pressed');
+    });
+    btn.addEventListener('touchend', () => {
+      btn.classList.remove('pressed');
+    });
+    btn.addEventListener('touchcancel', () => 
+      btn.classList.remove('pressed')
+    );
+  });
+
 function clickEventHandler(e) {
 
-  if (e.target.matches("#btn-save")) { saveOne() }
   if (e.target.matches("#btn-add")) { createOne() }
+  if (e.target.matches("#btn-increase")) { increaseFontSizeRem() }
+  if (e.target.matches("#btn-decrease")) { decreaseFontSizeRem() }
+
+  if (e.target.matches("#btn-save")) { saveOne() }
   if (e.target.matches("#btn-delete")) { deleteOne() }
   if (e.target.matches("#overlay")) { closeInputBox() }
   if (e.target.matches("thead th") || e.target.closest("thead th")) { evaluateSort(e) }

@@ -8,13 +8,31 @@
     <button id="btn-add" aria-label="Add" title="Add">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9" />
+        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+      </svg>
+    </button>
+    <!-- Increase Font Button -->
+    <button id="btn-increase" aria-label="Increase Font" title="Increase Font">
+      <svg width="24" height="24" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="5" x2="12" y2="19" />
         <line x1="5" y1="12" x2="19" y2="12" />
       </svg>
     </button>
+
+    <!-- Decrease Font Button -->
+    <button id="btn-decrease" aria-label="Decrease Font" title="Decrease Font">
+      <svg width="24" height="24" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </svg>
+    </button>
     <div id="input-box" style="display:none">
-      <div id="hu" contenteditable="true"></div>
-      <div id="nl" contenteditable="true"></div>
+      <div id="hu" contenteditable="true" autocapitalize="off"></div>
+      <div id="nl" contenteditable="true" autocapitalize="off"></div>
       <div id="action-buttons">
         <button id="btn-save" aria-label="Save" title="Save">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
