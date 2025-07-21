@@ -1,0 +1,347 @@
+<style>
+
+/* Reset and base */
+* {
+  overscroll-behavior: none; // no refreshing
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+  height: 100%;
+  background: #f5f7fa;
+  color: #333;
+}
+
+/*****************/
+/***** TABLE *****/
+/*****************/
+
+/* Table fills viewport height */
+table {
+  width: 100%;
+ // height: 100vh;
+  border-collapse: collapse;
+  table-layout: fixed; /* equal column widths */
+  background: white;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
+}
+
+/* Table headers */
+thead {
+  background-color: #0078D7;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+
+   position: sticky;
+  top: 0;
+  z-index: 50;
+  transition: transform 0.3s ease;
+}
+
+
+
+th, td {
+  width: 50%;
+  border: 1px solid #e1e4e8;
+  padding: 12px 16px;
+  vertical-align: top;
+  word-wrap: break-word;
+  font-size: 1.1rem;
+  transition: background-color 0.2s ease;
+}
+
+th .sort-arrow {
+  margin-left: 6px;
+  font-size: 0.8rem;
+  user-select: none;
+  display: inline-block;  /* belangrijk, anders kan het "content" wegvallen */
+  width: 12px;            /* fix breedte zodat de pijltjes zichtbaar zijn */
+  text-align: center;
+  color: white;
+}
+
+th.asc .sort-arrow::after {
+  content: "▼";
+}
+
+th.desc .sort-arrow::after {
+  content: "▲";
+}
+
+/* Highlight row on hover */
+tbody tr:hover {
+  background-color: #e9f0fb;
+}
+
+/******************/
+/***** BUTTON *****/
+/******************/
+
+button svg {
+   width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  pointer-events: none;
+}
+
+button svg * {
+  pointer-events: none;
+}
+/* Floating Add button */
+#btn-add {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 200;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 120, 215, 0.65);
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  opacity: 0.7;
+}
+
+#btn-add:hover {
+  background: rgba(0, 120, 215, 0.85);
+  opacity: 1;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+#btn-add:active {
+  background: rgba(0, 90, 158, 0.85);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+}
+
+#action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Shared styles for all action buttons */
+#action-buttons button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Save button styles */
+#btn-save {
+  color: #28a745;
+}
+#btn-save:hover {
+  background-color: #e6f4ea;
+  color: #1e7e34;
+}
+
+/* Delete button styles */
+#btn-delete {
+  color: #dc3545;
+}
+#btn-delete:hover {
+  background-color: #f9e6e8;
+  color: #a71d2a;
+}
+
+/* Cancel button styles */
+#btn-cancel {
+  color: #6c757d;
+}
+#btn-cancel:hover {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+/*******************/
+/***** OVERLAY *****/
+/*******************/
+
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.12); /* subtle dark overlay */
+  pointer-events: auto; /* lets pointer events pass through */
+  opacity: 3; // was 0
+  transition: opacity 0.3s ease;
+  z-index: 140; /* below input-box (z-index:150) */
+}
+
+/*****************/
+/***** INPUT *****/
+/*****************/
+
+#input-box {
+  position: fixed;
+  top: calc(50% - (204px/2)); /* pas aan indien nodig */
+  left: 0;
+  width: 100vw;
+  padding: 16px 24px;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 150;
+  display: none; /* standaard verborgen */
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+/* Editable velden binnen input-box */
+#input-box > div[contenteditable="true"]{
+  flex: 1 1 45%;       /* flexibel, ongeveer helft breedte */
+  min-width: 200px;
+  border-width: 0 0 0 30px;  /* alleen links zichtbaar, 12px dik */
+  border-style: solid;
+  border-image-slice: 1;
+  padding: 10px 14px;
+  font-size: 1.1rem;
+  outline-offset: 2px;
+  outline-color: transparent;
+  transition: box-shadow 0.25s ease, background-color 0.25s ease;
+  overflow-wrap: break-word;
+  background: #fafafa;
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.07);
+  cursor: text;
+  min-height: 40px;
+  position: relative; /* nodig voor :empty:before */
+}
+
+#search-input {
+  flex: 1 1 45%;       /* flexibel, ongeveer helft breedte */
+  width: 100%;
+  border-style: none;
+  padding: 10px 14px;
+  font-size: 1.1rem;
+  outline-offset: 2px;
+  outline-color: transparent;
+  background: #fafafa;
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.07);
+  cursor: text;
+  min-height: 40px;
+  position: relative; /* nodig voor :empty:before */
+}
+
+#search-input:focus {
+  background: #fff;
+  box-shadow: 0 0 6px #0078D7aa;
+  outline-color: #0078D7;
+}
+
+/* Focus styling - laat border-image intact */
+#input-box > div[contenteditable="true"]:focus {
+  background: #fff;
+  box-shadow: 0 0 6px #0078D7aa;
+  outline-color: #0078D7;
+}
+
+/* Hongaarse vlag: verticale tricolor links */
+#hu {
+  margin-bottom: 12px;
+  border-image: linear-gradient(
+    to bottom,
+    #C8102E 0%,     /* rood */
+    #C8102E 33.33%,
+    #FFFFFF 33.33%,
+    #FFFFFF 66.66%,
+    #00843D 66.66%,
+    #00843D 100%
+  ) 1;
+}
+
+/* Nederlandse vlag: verticale tricolor links */
+#nl {
+  border-image: linear-gradient(
+    to bottom,
+    #D7141A 0%,     /* rood */
+    #D7141A 33.33%,
+    #FFFFFF 33.33%,
+    #FFFFFF 66.66%,
+    #21468B 66.66%,
+    #21468B 100%
+  ) 1;
+}
+
+/*******************/
+/***** SPINNER *****/
+/*******************/
+
+#spinner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+}
+
+.spinner-backdrop {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.6);
+  z-index: 9998;
+  backdrop-filter: blur(1px);
+}
+
+.spinner-icon {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 9999;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 4px solid #0078D7;
+  border-top: 4px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+
+/*************************/
+/***** MEDIA QUERIES *****/
+/*************************/
+
+
+/* Responsive for smaller screens */
+@media (max-width: 480px) {
+
+  
+  #btn-add {
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
+  }
+  
+  th, td {
+    font-size: 1rem;
+    padding: 10px 12px;
+  }
+}
+
+</style>

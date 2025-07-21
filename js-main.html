@@ -1,0 +1,333 @@
+<script>
+
+var data = []
+var sort = ""
+var timer = 0
+var lastScrollTop = 0;
+
+
+/***************************/
+/***** CRUD Operations *****/
+/***************************/
+
+function readAll() {
+
+  showSpinner()
+
+   google.script.run
+  .withSuccessHandler(function(response){
+
+    data = response;
+    sort = "hungarianAZ"
+    filterAndSort()
+  })
+  .readAll();
+}
+
+function showAll(processed) {
+
+  let tbody = document.querySelector("tbody")
+  tbody.innerHTML = ""
+
+  processed.forEach(d => {
+
+     let row = document.createElement("tr");
+     row.id = "M"+d[0]
+     let boxHu = document.createElement("td");
+     boxHu.innerHTML = d[1]
+     boxHu.classList.add("dblclick-select")
+     let boxNl = document.createElement("td");
+     boxNl.innerHTML = d[2]
+     boxNl.classList.add("dblclick-select")
+
+     row.appendChild(boxHu)
+     row.appendChild(boxNl)
+
+     tbody.appendChild(row)
+  })
+
+  closeSpinner()
+  closeInputBox()
+}
+
+function createOne() {
+  showInputBox("first")
+  document.querySelector("#btn-save").dataset.clickedId = "";
+}
+
+function selectOne(e) {
+
+  showInputBox()
+   
+  let rowId = e.target.closest("tr").id  
+  rowId = parseInt(rowId.slice(1)); 
+  document.querySelector("#btn-save").dataset.clickedId = rowId;
+  document.querySelector("#btn-delete").dataset.clickedId = rowId;
+
+  let indexInData = data.findIndex(row => row[0] == rowId)
+  document.querySelector("#hu").innerHTML = data[indexInData][1]
+  document.querySelector("#nl").innerHTML = data[indexInData][2]
+}
+
+function deleteOne() {
+
+  let confirmDelete = confirm("Weet je zeker dat je deze vertaling wilt verwijderen?");
+  if (!confirmDelete) return;
+
+  showSpinner();
+
+  let id = document.querySelector("#btn-delete").dataset.clickedId
+
+  google.script.run
+  .withSuccessHandler(function(response){
+  
+    data = response;
+    filterAndSort()
+  })
+  .deleteOne(id);
+}
+
+function saveOne() {
+
+  let hu = document.querySelector("#hu").textContent.trim();
+  let nl = document.querySelector("#nl").textContent.trim();
+
+  if (!hu || !nl) {
+    alert("Beide velden, Magyar en Nederlands, moeten ingevuld zijn!");
+    return;  // Stop opslaan als een veld leeg is
+  }
+
+
+  let id = document.querySelector("#btn-save").dataset.clickedId
+  let saved = []
+
+  if (id) {
+    saved = [id, hu, nl]
+  } else {
+    saved = ["", hu, nl]
+  }
+
+  showSpinner();
+
+  google.script.run
+  .withSuccessHandler(function(response){
+
+    data = response;
+    filterAndSort()
+
+
+  })
+  .saveOne(saved);
+}
+
+/***************************/
+/***** FILTER AND SORT *****/
+/***************************/
+
+function filterAndSort() {
+
+  console.log("data")
+   console.log(data)
+  let term = document.querySelector("#search-input").value
+  let lowerTerm = term.toLowerCase()
+  let processed = data
+  console.log("processed start")
+  console.log(processed)
+
+  if (term) {
+    processed = data.filter(row => {
+      return row[1].toLowerCase().includes(lowerTerm) ||
+            row[2].toLowerCase().includes(lowerTerm);
+    });
+  }
+
+  switch (sort) {
+    case "hungarianAZ":
+      processed.sort((a, b) => 
+        a[1].localeCompare(b[1], "hu", { sensitivity: 'base', ignorePunctuation: true }) * 1
+      );
+      break;
+    case "hungarianZA":
+      processed.sort((a, b) => 
+        a[1].localeCompare(b[1], "hu", { sensitivity: 'base', ignorePunctuation: true }) * -1
+      );
+      break;
+    case "dutchAZ":
+      processed.sort((a, b) => 
+        a[2].localeCompare(b[2], "nl", { sensitivity: 'base', ignorePunctuation: true }) * 1
+      );
+      break;
+    case "dutchZA":
+      processed.sort((a, b) => 
+        a[2].localeCompare(b[2], "nl", { sensitivity: 'base', ignorePunctuation: true }) * -1
+      );
+      break;
+    default:
+      processed.sort((a, b) => 
+        a[1].localeCompare(b[1], "hu", { sensitivity: 'base', ignorePunctuation: true }) * 1
+      );
+  }
+ 
+  showAll(processed)
+}
+
+function clearSortIndicators() {
+  document.querySelectorAll("th").forEach(th => {
+    th.classList.remove("asc", "desc");
+  });
+}
+
+function updateSortIndicators(column, direction) {
+  clearSortIndicators();
+  const th = document.querySelector(`th[data-column="${column}"]`);
+  if (th) {
+    th.classList.add(direction);
+  }
+}
+
+function evaluateSort(e) {
+  let th = e.target.matches("thead th") ? e.target : e.target.closest("thead th");
+  let column = parseInt(th.dataset.column);
+  if (!column) return;
+
+  // Bepaal huidige en nieuwe sorteer richting
+  let currentDirection = th.dataset.sortDirection || "asc";
+  let newDirection = currentDirection === "asc" ? "desc" : "asc";
+  th.dataset.sortDirection = newDirection;
+
+  // Update globale sort variabele
+  if (column === 1) {
+    sort = newDirection === "asc" ? "hungarianAZ" : "hungarianZA";
+  }
+  if (column === 2) {
+    sort = newDirection === "asc" ? "dutchAZ" : "dutchZA";
+  }
+
+  updateSortIndicators(column, newDirection);
+  filterAndSort();
+}
+
+/*****************************/
+/***** LAYOUT OPERATIONS *****/
+/*****************************/
+
+function showInputBox(first = "") {
+
+  document.querySelector("#input-box").style.display = "block"
+  document.querySelector("#overlay").style.display = "block"
+  document.querySelector("#btn-add").style.display = "none"
+
+  if (!first) {
+    document.querySelector("#btn-delete").style.display = "block"
+  } else {
+    document.querySelector("#btn-delete").style.display = "none"
+  }
+
+}
+
+function closeInputBox() {
+
+  document.querySelector("#input-box").style.display = "none"
+  document.querySelector("#overlay").style.display = "none"
+  document.querySelector("#btn-add").style.display = "block"
+  document.querySelector("#hu").innerHTML = ""
+  document.querySelector("#nl").innerHTML = ""
+
+}
+
+function showSpinner() {
+  document.getElementById("spinner").style.display = "block";
+}
+
+function closeSpinner() {
+  document.getElementById("spinner").style.display = "none";
+}
+
+
+
+/****************************/
+/****** EVENT HANDLERS ******/
+/****************************/
+
+function clickEventHandler(e) {
+
+  if (e.target.matches("#btn-save")) { saveOne() }
+  if (e.target.matches("#btn-add")) { createOne() }
+  if (e.target.matches("#btn-delete")) { deleteOne() }
+  if (e.target.matches("#overlay")) { closeInputBox() }
+  if (e.target.matches("thead th") || e.target.closest("thead th")) { evaluateSort(e) }
+}
+
+
+function doubleClickEventHandler(e) {
+  if (e.target.matches(".dblclick-select")) { selectOne(e) }
+  if (e.target.matches("#search-input")) { e.target.value = ""; filterAndSort() }
+}
+
+function keyDownEventHandler(e) {
+
+  let btnSave = document.querySelector("#btn-save");
+  let btnSaveStyle = window.getComputedStyle(btnSave);
+
+  let spinner = document.querySelector("#spinner");
+  let spinnerStyle = window.getComputedStyle(spinner);
+
+   if (e.key == "Enter") {
+    e.preventDefault();
+    if (btnSaveStyle.display == "block" && spinnerStyle.display == "none") {
+      saveOne()
+    }
+  }
+}
+
+function inputEventHandler(e) {
+   if (e.target.matches("#search-input")) { filterAndSort() }
+}
+
+function scrollEventHandler(e) {
+
+  let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+  let thead = document.querySelector("thead");
+
+  if (currentScroll > lastScrollTop) {
+    // Scrolling down
+    thead.style.transform = "translateY(-100%)";
+  } else {
+    // Scrolling up
+    thead.style.transform = "translateY(0)";
+  }
+
+  lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+}
+
+function touchStartEventHandler(e) {
+  if (e.target.matches(".dblclick-select")) { 
+    timer = setTimeout(() => { selectOne(e) }, 750);
+  }
+
+  if (e.target.matches("#search-input")) { 
+    timer = setTimeout(() => { e.target.value = "";  filterAndSort() }, 750);
+  }
+}
+
+function touchEndEventHandler(e) {
+  if (e.target.matches(".dblclick-select")) { clearTimeout(timer) }
+}
+
+function touchCancelEventHandler(e) {
+  if (e.target.matches(".dblclick-select")) { clearTimeout(timer) }
+} 
+
+document.addEventListener("DOMContentLoaded", () => { readAll() })
+document.getElementsByTagName("body")[0].addEventListener("click", clickEventHandler);
+document.getElementsByTagName("body")[0].addEventListener("dblclick", doubleClickEventHandler);
+document.getElementsByTagName("body")[0].addEventListener("input", inputEventHandler);
+document.getElementsByTagName("body")[0].addEventListener("keydown", keyDownEventHandler);
+document.getElementsByTagName("body")[0].addEventListener("touchstart", touchStartEventHandler);
+document.getElementsByTagName("body")[0].addEventListener("touchend", touchEndEventHandler);
+document.getElementsByTagName("body")[0].addEventListener("touchcancel", touchCancelEventHandler);
+window.addEventListener("scroll", scrollEventHandler);
+
+
+
+</script>
