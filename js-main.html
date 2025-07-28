@@ -215,6 +215,15 @@ function filterAndSort() {
         a[1].localeCompare(b[1], "hu", { sensitivity: 'base', ignorePunctuation: true }) * 1
       );
   }
+
+  let amount = processed.length;
+  let showMatches = document.querySelector("#found-search-input")
+
+  if (term != "") {
+    amount != 1 ? showMatches.innerHTML = amount+" overeenkomsten" : showMatches.innerHTML = 1+" overeenkomst" ;
+  } else {
+    showMatches.innerHTML = "";
+  }
  
   showAll(processed)
 }

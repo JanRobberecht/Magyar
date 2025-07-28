@@ -238,7 +238,8 @@ button svg * {
 
 #input-box {
   position: fixed;
-  top: calc(50% - (204px/2)); /* pas aan indien nodig */
+ // top: 0px
+  //top: calc(50% - (204px/2)); /* pas aan indien nodig */
   left: 0;
   width: 100vw;
   padding: 16px 24px;
@@ -283,6 +284,13 @@ button svg * {
   cursor: text;
   min-height: 40px;
   position: relative; /* nodig voor :empty:before */
+}
+
+#found-search-input {
+  margin-top: 10px;
+  padding-left: 14px;
+  min-height: 18px;
+  color: grey;
 }
 
 #search-input:focus {
