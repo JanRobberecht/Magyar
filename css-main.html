@@ -9,17 +9,21 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
 }
 
 html, body {
   height: 100%;
   background: #f5f7fa;
   color: #333;
+  font-size: 15px;
 }
+
 
 /*****************/
 /***** TABLE *****/
 /*****************/
+
 
 /* Table fills viewport height */
 table {
@@ -46,7 +50,7 @@ thead {
 th, td {
   width: 50%;
   border: 1px solid #e1e4e8;
-  padding: 12px 16px;
+  padding: 10px 14px;
   vertical-align: top;
   word-wrap: break-word;
   transition: background-color 0.2s ease;
@@ -71,7 +75,7 @@ th.desc .sort-arrow::after {
 }
 
 /* Highlight row on hover */
-tbody tr:hover {
+#vocabulary tbody tr:hover {
   background-color: #e9f0fb;
 }
 
@@ -89,17 +93,19 @@ button svg {
 button svg * {
   pointer-events: none;
 }
+
 /* Floating Action Buttons (Add, Increase Font, Decrease Font) */
-#btn-add,
+#btn-box,
+#btn-screen,
 #btn-increase,
 #btn-decrease {
   position: fixed;
-  right: 16px;
+  //right: 16px;
   width: 48px;
   height: 48px;
   border-radius: 50%;
   border: none;
-  background: rgba(0, 120, 215, 0.65);
+  background: rgba(0, 120, 215, 0.5);
   color: white;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   cursor: pointer;
@@ -122,24 +128,33 @@ button svg * {
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
 }*/
 
-#btn-add.pressed,
+#btn-box.pressed,
+#btn-screen.pressed,
 #btn-increase.pressed,
 #btn-decrease.pressed {
-  background: rgba(0, 90, 158, 0.85);
+  background: rgba(0, 90, 158, 0.70);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
 }
 
 /* Positioning: stack vertically above each other */
-#btn-add {
-  bottom: 128px;
+#btn-box {
+  bottom: 72px;
+  right: 16px;
+}
+
+#btn-screen {
+  bottom: 16px;
+  right: 16px;
 }
 
 #btn-increase {
   bottom: 72px; /* 72 + 48 + 8 spacing */
+  left: 16px;
 }
 
 #btn-decrease {
   bottom: 16px; /* 16 + 48 + 8 spacing */
+  left: 16px;
 }
 
 #action-buttons {
@@ -149,11 +164,11 @@ button svg * {
 }
 
 /* Shared styles for all action buttons */
-#action-buttons button {
+#action-buttons button, .btn-expand {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px 12px;
+  padding: 10px 12px;
   border-radius: 8px;
   transition: background-color 0.25s ease, color 0.25s ease;
   color: #555;
@@ -187,6 +202,17 @@ button svg * {
 #btn-cancel:hover {
   background-color: #e9ecef;
   color: #495057;
+}
+
+/* Expand button styles for dark blue background (#0078D7) */
+.btn-expand {
+  color: #ffffff;
+  margin-left: auto
+}
+
+.btn-expand:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* zachte witachtige hover */
+  color: #ffffff;
 }
 
 /*******************/
@@ -299,6 +325,125 @@ button svg * {
   ) 1;
 }
 
+/****************/
+/***** LIST *****/
+/****************/
+
+ul {
+  padding-left: 0;
+  margin-left: 0;
+}
+
+li {
+  list-style: none;
+  position: relative;
+  padding-left: 1em; /* space for bullet */
+}
+
+li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  color: #abacaf;
+//  font-size: 1em;
+  line-height: 1.2;
+}
+
+
+
+/*******************/
+/***** DETAILS AND SUMMARY *****/
+/*******************/
+
+summary {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  list-style: none;
+  cursor: pointer;
+  position: relative;
+}
+
+/* De pseudo-pijl komt binnen de 14px linker padding */
+summary::before {
+  content: '▶';
+  margin-right: 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+
+
+/*.det-lvl1[open] > .summ-lvl1 button { 
+  display: flex;
+  margin-left: auto
+}
+*/
+//CSS can't style descendants of <summary> based on the parent <details[open]> state, due to limitations in the spec and browser support.
+
+
+
+/* Draai de pijl als details open is */
+.det-lvl1[open] > .summ-lvl1::before {
+  transform: rotate(90deg);
+}
+
+
+
+.summ-lvl1 {
+  background-color: #0078D7;
+  color: white;
+  font-weight: 600;
+}
+
+
+.det-lvl2[open] > .summ-lvl2::before {
+  transform: rotate(90deg);
+}
+
+.summ-lvl2 {
+  background: #e9f0fb;
+  color: #0078D7;
+  font-weight: 600;
+}
+
+.det-lvl3[open] > .summ-lvl3::before {
+  transform: rotate(90deg);
+}
+
+.det-lvl3[open] > .summ-lvl3 {
+  display: none;
+}
+
+/* #cases > summary:first-child button {
+  margin-left: auto; // to put it completely at the end of the row
+}*/
+
+/*
+#cases > summary:first-child {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 14px
+}*/
+
+
+
+
+
+.det-lvl3[open] > .summ-lvl3 {
+  display: none;
+}
+
+.summ-lvl3 {
+  background-color: white;
+  color: #abacaf;
+}
+
+.details-explanation-box {
+  padding: 10px 14px;
+  background-color: white;
+}
+
 /*******************/
 /***** SPINNER *****/
 /*******************/
@@ -338,15 +483,20 @@ button svg * {
   100% { transform: rotate(360deg);}
 }
 
+footer {
+  height: 160px;
+}
+
 /*************************/
 /***** MEDIA QUERIES *****/
 /*************************/
 
 @media (hover: hover) and (pointer: fine) {
-  #btn-add:hover,
+  #btn-box:hover,
+  #btn-screen:hover,
   #btn-increase:hover,
   #btn-decrease:hover {
-    background: rgba(0, 120, 215, 0.85);
+    background: rgba(0, 120, 215, 0.70);
     opacity: 1;
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
   }
@@ -356,15 +506,9 @@ button svg * {
 @media (max-width: 480px) {
 
   
-  #btn-add {
-    width: 44px;
-    height: 44px;
-    font-size: 24px;
-  }
+
   
-  th, td {
-    padding: 10px 12px;
-  }
+ 
 }
 
 </style>

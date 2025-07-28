@@ -5,11 +5,20 @@
      <?!= include("css-main");?>  
   </head>
   <body>
-    <button id="btn-add" aria-label="Add" title="Add">
+    <button id="btn-box" aria-label="Box" title="Box">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 20h9" />
         <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+      </svg>
+    </button>
+
+    <button id="btn-screen" aria-label="Switch" title="Switch">
+      <svg width="24" height="24" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <!-- Rondere buitenboog -->
+        <path d="M16 8c0-3-2.5-5-5.5-5S5 5 5 8v8c0 3 2.5 5 5.5 5S16 19 16 16v-3h-5" />
       </svg>
     </button>
     <!-- Increase Font Button -->
@@ -62,7 +71,11 @@
      
     </div>
     <div id="overlay" style="display:none"></div>
-    <table>
+
+    <?!= include("html-vocabulary");?> 
+    <?!= include("html-grammar");?> 
+
+    <!--table>
       <thead>
        <tr>
         <th class="asc" data-column="1" data-sort-direction="asc" style="cursor:pointer;">Magyar <span class="sort-arrow"></span></th>
@@ -71,11 +84,15 @@
       </thead>
       <tbody>
       </tbody>
-    </table>
+    </table-->
+
     <div id="spinner" style="display:none;">
       <div class="spinner-backdrop"></div>
       <div class="spinner-icon"></div>
     </div>
+
+    <footer></footer>
+
      <?!= include("js-main");?>  
   </body>
 </html>
