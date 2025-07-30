@@ -44,6 +44,13 @@ const svgVoc = `
     <path d="M4 4l8 16 8-16" />
   </svg>
 `
+const svgSent = `
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 4H9a4 4 0 0 0 0 8h6a4 4 0 0 1 0 8H6" />
+  </svg>
+`
 /***************************/
 /***** CRUD Operations *****/
 /***************************/
@@ -268,47 +275,68 @@ function evaluateSort(e) {
 /***** LAYOUT OPERATIONS *****/
 /*****************************/
 
-function toggleScreens() {
+function toggleScreens(e) {
 
-  let btnScreen = document.querySelector("#btn-screen")
-  btnScreen.classList.toggle("grammar-opened")
+  
+  let button = e.target.closest("#btn-screen")
+  let value = parseInt(button.value, 10) //Always use radix 10 to avoid issues with octal interpretation.
+  value != 3 ? button.value = value+1 : button.value = 1 ;
 
-  if (btnScreen.classList.contains("grammar-opened")) {
-    document.querySelector("#input-box").style.display = "none";
-    document.querySelector("#overlay").style.display = "none";
-    document.querySelector("#spinner").style.display = "none";
+  document.querySelector("#input-box").style.display = "none";
+  document.querySelector("#overlay").style.display = "none";
+  document.querySelector("#spinner").style.display = "none";
+
+
+  /* vocabulary */
+  if (button.value == 1) {
+
+
+    forceVocabularyToMaximumWidth()      
+    document.querySelector("#btn-box").style.display = "block"
+    document.querySelector("#grammar").style.display = "none"
+    document.querySelector("#sentencary").style.display = "none"
+    button.innerHTML = svgGram
+  }
+  
+  /* grammar */
+  if (button.value == 2) {
     document.querySelector("#btn-box").style.display = "none";
     document.querySelector("#vocabulary").style.display = "none";
     document.querySelector("#grammar").style.display = "block";
-    btnScreen.innerHTML = svgVoc
-  } else {
-    document.querySelector("#btn-box").style.display = "block"
-    document.querySelector("#vocabulary").style.display = "block"
-    document.querySelector("#grammar").style.display = "none"
-    btnScreen.innerHTML = svgGram
+    document.querySelector("#sentencary").style.display = "none"
+    button.innerHTML = svgSent
   }
+
+  /* sententorium */
+  if (button.value == 3) {
+    document.querySelector("#btn-box").style.display = "block";
+    document.querySelector("#vocabulary").style.display = "none";
+    document.querySelector("#grammar").style.display = "none"; 
+    document.querySelector("#sentencary").style.display = "block"
+    button.innerHTML = svgVoc
+  }
+ 
 }
 
 function toggleExpandButton(e) {
 
-  console.log("WAAROM?")
+  if (!e.target.closest(".btn-expand")) {
 
-  let summary = e.target.closest(".with-expand-button")
-  let button = summary.querySelector(".btn-expand")
-  let details = summary.closest("details")
+    let summary = e.target.closest(".with-expand-button")
+    let button = summary.querySelector(".btn-expand")
+    let details = summary.closest("details")
 
-  if (details.open) { // the open will be set after the code underneath
-    summary.style.padding = "10px 14px";
-    summary.style.justifyContent = "flex-start";
-    button.style.display = "none";
-  } else {
-    summary.style.padding = "0px 14px";
-    summary.style.justifyContent = "space-between";
-    button.style.display = "flex";
+
+    if (details.open) { // the open will be set after the code underneath
+      summary.style.padding = "10px 14px";
+      summary.style.justifyContent = "flex-start";
+      button.style.display = "none";
+    } else {
+      summary.style.padding = "0px 14px";
+      summary.style.justifyContent = "space-between";
+      button.style.display = "flex";
+    }
   }
-
-  
-
 }
 
 function toggleAllChildrenDetails(e) {
@@ -355,6 +383,25 @@ function closeDetails(e) {
     details.removeAttribute("open");
   }
 }
+
+function forceVocabularyToMaximumWidth() {
+
+  let table = document.getElementById("vocabulary");
+
+  table.style.display = "none"; // kort verbergen
+  void table.offsetWidth;       // force repaint
+  table.style.display = "";     // weer tonen
+
+  // Extra: herbevestig layout
+  table.style.tableLayout = "fixed";
+  table.style.width = "100%";
+
+  // Of per kolom
+  const ths = table.querySelectorAll("th, td");
+  ths.forEach(cell => cell.style.width = "50%");
+
+}
+
 
 /***** FONT SIZING *****/
   
@@ -489,7 +536,7 @@ function closeSpinner() {
 function clickEventHandler(e) {
 
   if (e.target.matches("#btn-box")) { createOne() }
-  if (e.target.matches("#btn-screen")) { toggleScreens() }
+  if (e.target.closest("#btn-screen")) { toggleScreens(e) }
   if (e.target.matches("#btn-increase")) { increaseFontSizeRem() }
   if (e.target.matches("#btn-decrease")) { decreaseFontSizeRem() }
   if (e.target.matches("#btn-save")) { saveOne() }
@@ -497,7 +544,7 @@ function clickEventHandler(e) {
   if (e.target.matches("#overlay")) { closeInputBox() }
   if (e.target.matches("thead th") || e.target.closest("thead th")) { evaluateSort(e) }
   if (e.target.matches("thead th") || e.target.closest("thead th")) { evaluateSort(e) }
-  if (e.target.matches(".with-expand-button")) { toggleExpandButton(e) }
+  if (e.target.closest(".with-expand-button")) { toggleExpandButton(e) }
   if (e.target.closest(".btn-expand")) { toggleAllChildrenDetails(e) }
 }
 

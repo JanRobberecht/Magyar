@@ -1,5 +1,33 @@
 <style>
 
+:root {
+  --blackLightTransparant: rgba(0, 0, 0, 0.07); // box shadow, input shadow, #overlay
+  --blackMediumTransparant: rgba(0, 0, 0, 0.2); // Box shadows, input, table, overlay, pressed button shadow, button hover shadow
+  --blueDutch: rgba(33, 70, 139, 1); // NL blue
+  --blueNavySemiTransparant: rgba(0, 90, 158, 0.7); // pressed floating buttons
+  --blueMicrosoft: rgba(0, 120, 215, 1); // header background, buttons
+  --blueMicrosoftSemiTransparant: rgba(0, 120, 215, 0.67); // box shadow focus, floating buttons, button hover
+  --bluePale: rgba(233, 240, 251, 1); // hover row, lvl2 background
+  --grayVeryDark: rgba(51, 51, 51, 1); // text color
+  --grayDark: rgba(85, 85, 85, 1); // found search input, example nl
+  --grayMedium: rgba(125, 125, 125, 1); // found search input, example nl
+  --grayCool: rgba(171, 172, 175, 1); // bullets, lvl3 text
+  --grayLight: rgba(225, 228, 232, 1); // table border
+  --grayVeryLightGrayBlue: rgba(245, 247, 250, 1); // body background
+  --grayVeryPaleGray: rgba(250, 250, 250, 1); // inputs
+  --greenDark: rgba(0, 132, 61, 1); // HU green,  example hu
+  --greenForest: rgba(30, 126, 52, 1); // #btn-save:hover
+  --greenSuccess: rgba(40, 167, 69, 1); // #btn-save default
+  --greenPaleMint: rgba(230, 244, 234, 1); // #btn-save:hover
+  --redDark: rgba(167, 29, 42, 1); // #btn-delete:hover
+  --redDutch: rgba(215, 20, 26, 1); // NL red
+  --redVivid: rgba(200, 16, 46, 1); // HU red
+  --redCrimson: rgba(220, 53, 69, 1); // #btn-delete
+  --redSoftPink: rgba(249, 230, 232, 1); // #btn-delete:hover
+  --white: rgba(255, 255, 255, 1); // flag white, input focus
+  --whiteTransparant: rgba(255, 255, 255, 0.4); // btn-expand hover, spinner-bg
+}
+
 /* Reset and base */
 * {
   overscroll-behavior: none; // no refreshing
@@ -14,11 +42,14 @@
 
 html, body {
   height: 100%;
-  background: #f5f7fa;
-  color: #333;
+  background: var(--grayVeryLightGrayBlue);
+  color: var(--grayVeryDark);
   font-size: 15px;
 }
 
+b {
+  font-weight: 600; /* of 400, of 600 */
+}
 
 /*****************/
 /***** TABLE *****/
@@ -30,15 +61,15 @@ table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed; /* equal column widths */
-  overflow-x: hidden; /* eventueel */
-  background: white;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
+  //overflow-x: hidden; /* eventueel */
+  background: var(--white);
+  box-shadow: 0 4px 12px var(--blackLightTransparant);
 }
 
 /* Table headers */
 thead {
-  background-color: #0078D7;
-  color: white;
+  background-color: var(--blueMicrosoft);
+  color: var(--white);
   font-weight: 600;
   position: sticky;
   top: 0;
@@ -50,7 +81,7 @@ thead {
 
 th, td {
   width: 50%;
-  border: 1px solid #e1e4e8;
+  border: 1px solid var(--grayLight);
   padding: 10px 14px;
   vertical-align: top;
   word-wrap: break-word;
@@ -64,7 +95,7 @@ th .sort-arrow {
   display: inline-block;  /* belangrijk, anders kan het "content" wegvallen */
   width: 12px;            /* fix breedte zodat de pijltjes zichtbaar zijn */
   text-align: center;
-  color: white;
+  color: var(--white);
 }
 
 th.asc .sort-arrow::after {
@@ -77,7 +108,7 @@ th.desc .sort-arrow::after {
 
 /* Highlight row on hover */
 #vocabulary tbody tr:hover {
-  background-color: #e9f0fb;
+  background-color: var(--bluePale);
 }
 
 /******************/
@@ -106,9 +137,9 @@ button svg * {
   height: 48px;
   border-radius: 50%;
   border: none;
-  background: rgba(0, 120, 215, 0.5);
-  color: white;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  background: var(--blueMicrosoftSemiTransparant);
+  color: var(--white);
+  box-shadow: 0 4px 10px var(--blackMediumTransparant);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -121,20 +152,14 @@ button svg * {
   z-index: 200;
 }
 
-/*#btn-add:hover,
-#btn-encrease:hover,
-#btn-decrease:hover {
-  background: rgba(0, 120, 215, 0.85);
-  opacity: 1;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
-}*/
+
 
 #btn-box.pressed,
 #btn-screen.pressed,
 #btn-increase.pressed,
 #btn-decrease.pressed {
-  background: rgba(0, 90, 158, 0.70);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+  background: var(--blueNavySemiTransparant);
+  box-shadow: 0 3px 6px var(--blackMediumTransparant);
 }
 
 /* Positioning: stack vertically above each other */
@@ -172,7 +197,7 @@ button svg * {
   padding: 10px 12px;
   border-radius: 8px;
   transition: background-color 0.25s ease, color 0.25s ease;
-  color: #555;
+  color: var(--grayDark);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -180,40 +205,32 @@ button svg * {
 
 /* Save button styles */
 #btn-save {
-  color: #28a745;
+  color: var(--greenSuccess);
 }
 #btn-save:hover {
-  background-color: #e6f4ea;
-  color: #1e7e34;
+  background-color: var(--greenPaleMint);
+  color: var(--greenForest);
 }
 
 /* Delete button styles */
 #btn-delete {
-  color: #dc3545;
+  color: var(--redCrimson);
 }
 #btn-delete:hover {
-  background-color: #f9e6e8;
-  color: #a71d2a;
+  background-color: var(--redSoftPink);
+  color: var(--redDark);
 }
 
-/* Cancel button styles */
-#btn-cancel {
-  color: #6c757d;
-}
-#btn-cancel:hover {
-  background-color: #e9ecef;
-  color: #495057;
-}
 
-/* Expand button styles for dark blue background (#0078D7) */
+/* Expand button styles for dark blue background (var(--blueMicrosoft)) */
 .btn-expand {
-  color: #ffffff;
+  color: var(--white);
   margin-left: auto
 }
 
 .btn-expand:hover {
-  background-color: rgba(255, 255, 255, 0.2); /* zachte witachtige hover */
-  color: #ffffff;
+  background-color: var(--whiteTransparant); /* zachte witachtige hover */
+  color: var(--white);
 }
 
 /*******************/
@@ -226,7 +243,7 @@ button svg * {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.12); /* subtle dark overlay */
+  background-color: var(--blackLightTransparant); /* subtle dark overlay */
   pointer-events: auto; /* lets pointer events pass through */
   opacity: 3; // was 0
   transition: opacity 0.3s ease;
@@ -244,8 +261,8 @@ button svg * {
   left: 0;
   width: 100vw;
   padding: 16px 24px;
-  background-color: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  background-color: var(--white);
+  box-shadow: 0 2px 8px var(--blackLightTransparant);
   z-index: 150;
   display: none; /* standaard verborgen */
   box-sizing: border-box;
@@ -257,7 +274,8 @@ button svg * {
 /* Editable velden binnen input-box */
 #input-box > div[contenteditable="true"]{
   flex: 1 1 45%;       /* flexibel, ongeveer helft breedte */
-  min-width: 200px;
+ // width: 200px;
+  min-width: 0;
   border-width: 0 0 0 30px;  /* alleen links zichtbaar, 12px dik */
   border-style: solid;
   border-image-slice: 1;
@@ -266,8 +284,8 @@ button svg * {
   outline-color: transparent;
   transition: box-shadow 0.25s ease, background-color 0.25s ease;
   overflow-wrap: break-word;
-  background: #fafafa;
-  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.07);
+  background: var(--grayVeryPaleGray);
+  box-shadow: inset 0 1px 3px var(--blackLightTransparant);;
   cursor: text;
   min-height: 40px;
   position: relative; /* nodig voor :empty:before */
@@ -280,8 +298,8 @@ button svg * {
   padding: 10px 14px;
   outline-offset: 2px;
   outline-color: transparent;
-  background: #fafafa;
-  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.07);
+  background: var(--grayVeryPaleGray);
+  box-shadow: inset 0 1px 3px var(--blackLightTransparant);;
   cursor: text;
   min-height: 40px;
   position: relative; /* nodig voor :empty:before */
@@ -291,20 +309,20 @@ button svg * {
   margin-top: 10px;
   padding-left: 14px;
   min-height: 18px;
-  color: grey;
+  color: var(--grayMedium)
 }
 
 #search-input:focus {
-  background: #fff;
-  box-shadow: 0 0 6px #0078D7aa;
-  outline-color: #0078D7;
+  background: var(--white);
+  box-shadow: 0 0 6px var(--blueMicrosoftSemiTransparant);
+  outline-color: var(--blueMicrosoft);
 }
 
 /* Focus styling - laat border-image intact */
 #input-box > div[contenteditable="true"]:focus {
-  background: #fff;
-  box-shadow: 0 0 6px #0078D7aa;
-  outline-color: #0078D7;
+  background: var(--white);
+  box-shadow: 0 0 6px var(--blueMicrosoftSemiTransparant);
+  outline-color: var(--blueMicrosoft);
 }
 
 /* Hongaarse vlag: verticale tricolor links */
@@ -312,12 +330,12 @@ button svg * {
   margin-bottom: 12px;
   border-image: linear-gradient(
     to bottom,
-    #C8102E 0%,     /* rood */
-    #C8102E 33.33%,
-    #FFFFFF 33.33%,
-    #FFFFFF 66.66%,
-    #00843D 66.66%,
-    #00843D 100%
+    var(--redVivid) 0%,     /* rood */
+    var(--redVivid) 33.33%,
+    var(--white) 33.33%,
+    var(--white) 66.66%,
+    var(--greenDark) 66.66%,
+    var(--greenDark) 100%
   ) 1;
 }
 
@@ -325,12 +343,12 @@ button svg * {
 #nl {
   border-image: linear-gradient(
     to bottom,
-    #D7141A 0%,     /* rood */
-    #D7141A 33.33%,
-    #FFFFFF 33.33%,
-    #FFFFFF 66.66%,
-    #21468B 66.66%,
-    #21468B 100%
+    var(--redDutch) 0%,     /* rood */
+    var(--redDutch) 33.33%,
+    var(--white) 33.33%,
+    var(--white) 66.66%,
+    var(--blueDutch) 66.66%,
+    var(--blueDutch) 100%
   ) 1;
 }
 
@@ -354,7 +372,7 @@ li::before {
   position: absolute;
   left: 0;
   top: 0.1em;
-  color: #abacaf;
+  color: var(--grayCool);
 //  font-size: 1em;
   line-height: 1.2;
 }
@@ -400,8 +418,8 @@ summary::before {
 
 
 .summ-lvl1 {
-  background-color: #0078D7;
-  color: white;
+  background-color: var(--blueMicrosoft);
+  color: var(--white);
   font-weight: 600;
 }
 
@@ -411,8 +429,8 @@ summary::before {
 }
 
 .summ-lvl2 {
-  background: #e9f0fb;
-  color: #0078D7;
+  background: var(--bluePale);
+  color: var(--blueMicrosoft);
   font-weight: 600;
 }
 
@@ -444,13 +462,41 @@ summary::before {
 }
 
 .summ-lvl3 {
-  background-color: white;
-  color: #abacaf;
+  background-color: var(--white);
+  color: var(--grayCool);
 }
 
-.details-explanation-box {
+.explanation-box {
   padding: 10px 14px;
-  background-color: white;
+  background-color: var(--white);
+  border: 1px solid var(--grayLight);
+}
+
+.explanation-box .explanation-title {
+  color: var(--grayVeryDark);
+  font-weight: 600;
+}
+
+.explanation-box p {
+  margin-top: 10px;
+}
+
+
+.explanation-box p:first-child, .explanation-box p.no-margin {
+  margin-top: 0
+}
+
+.explanation-box .example-hu {
+  color: var(--greenDark);
+}
+
+.explanation-box .example-nl {
+  color: var(--grayMedium);
+  font-style: italic;
+}
+
+.explanation-box .red {
+  color: var(--redDark)
 }
 
 /*******************/
@@ -468,7 +514,7 @@ summary::before {
   position: fixed;
   width: 100vw;
   height: 100vh;
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--whiteTransparant);
   z-index: 9998;
   backdrop-filter: blur(1px);
 }
@@ -481,7 +527,7 @@ summary::before {
   width: 40px;
   height: 40px;
   margin: -20px 0 0 -20px;
-  border: 4px solid #0078D7;
+  border: 4px solid var(--blueMicrosoft);
   border-top: 4px solid transparent;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -505,9 +551,9 @@ footer {
   #btn-screen:hover,
   #btn-increase:hover,
   #btn-decrease:hover {
-    background: rgba(0, 120, 215, 0.70);
+    background: var(--blueMicrosoftSemiTransparant);
     opacity: 1;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 14px var(--blackMediumTransparant);
   }
 }
 
