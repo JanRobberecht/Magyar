@@ -51,6 +51,8 @@ b {
   font-weight: 600; /* of 400, of 600 */
 }
 
+
+
 /*****************/
 /***** TABLE *****/
 /*****************/
@@ -185,8 +187,16 @@ button svg * {
 
 #action-buttons {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   gap: 10px;
+  padding: 15px 0;
+}
+
+#action-buttons > div {
+
+  display: flex
+
 }
 
 /* Shared styles for all action buttons */
@@ -198,9 +208,25 @@ button svg * {
   border-radius: 8px;
   transition: background-color 0.25s ease, color 0.25s ease;
   color: var(--grayDark);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+ 
+}
+
+* List button styles (blauw) */
+#btn-list {
+  color: var(--blueDutch);
+}
+#btn-list:hover {
+  background-color: var(--bluePale);
+  color: var(--blueMicrosoft);
+}
+
+/* Bold button styles (blauw) */
+#btn-bold {
+  color: var(--blueMicrosoft);
+}
+#btn-bold:hover {
+  background-color: var(--bluePale);
+  color: var(--blueDutch);
 }
 
 /* Save button styles */
