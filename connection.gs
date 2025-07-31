@@ -1,5 +1,6 @@
 var ss = SpreadsheetApp.openById("1g5JmkNgvd7EQfHiA1lc9NWtmj3n9K2Q5ruhdNNh7P6g")
-var ws = ss.getSheetByName("List")
+var wsVocabulary = ss.getSheetByName("Vocabulary")
+var wsSentences = ss.getSheetByName("Sentences")
 
 
 function doGet() {
@@ -13,11 +14,10 @@ function include(filename){
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
 
-function getRow(id) {
+function getRow(sheet, id) {
 
-  let lastRow = ss.getLastRow()
-  Logger.log(typeof lastRow)
-  let columnToSearch = ws.getRange(1, 1, lastRow, 1)
+  let lastRow = sheet.getLastRow()
+  let columnToSearch = sheet.getRange(1, 1, lastRow, 1)
   let finder = columnToSearch.createTextFinder(id).findNext();
 
   if (finder) {
@@ -25,67 +25,115 @@ function getRow(id) {
   }
 }
 
+function splitId(id) {
 
-function readAll() {
+  let idLetter = id.charAt(0)
+  let idNumber = parseInt(id.slice(1))
+  let sheet, typeOfReadAll
 
-  let data = ws.getDataRange().getValues()
-  data.shift()
+  if (idLetter == "V") {
+    sheet = wsVocabulary;
+    typeOfReadAll = "vocabulary"
+  }
 
-  return data
+  if (idLetter == "S") {
+    sheet = wsSentences;
+    typeOfReadAll = "sentences"
+  }
+
+  
+  return [idNumber, sheet, typeOfReadAll]
+}
+
+
+function readAll(type) {
+
+  if (type == "all") {
+    return [readAllVocabulary(), readAllSentences()]
+  }
+
+  if (type == "vocabulary") {
+    return [readAllVocabulary(), ""]
+  }
+
+  if (type == "sentences") {
+    return ["", readAllSentences()]
+  }
 
 }
 
-function saveOne(saved) {
+function readAllVocabulary() {
+  let vocabulary =  wsVocabulary.getDataRange().getValues()
+  vocabulary.shift()
+  return vocabulary
+}
+
+function readAllSentences() {
+  let sentences =  wsSentences.getDataRange().getValues()
+  sentences.shift()
+  return sentences
+}
+
+function saveOne(saved, type) {
 
   if (saved[0] == "") {
-    Logger.log("create")
-    return createOne(saved)
+    return createOne(saved, type)
   } else {
-    Logger.log("update")
     return updateOne(saved)
   }
 }
 
-function createOne(saved) {
-  Logger.log(saved)
-   let lock = LockService.getScriptLock();
+function createOne(saved, type) {
+
+  let lock = LockService.getScriptLock();
   lock.waitLock(30000);
 
   if (lock.hasLock()) {
 
-    Utilities.sleep(1000);
+   // Utilities.sleep(1000);
 
-    let data = readAll()
+    let sheet = type == "vocabulary" ? wsVocabulary : wsSentences;
+    let data = type == "vocabulary" ? readAll(type)[0] : readAll(type)[1];
     let lastId = data[data.length - 1][0]
-    let newId = lastId +1
+    let newId = parseInt(lastId) +1
     saved[0] = newId
 
-    Logger.log(saved)
+    Logger.log(sheet)
+    Logger.log(data)
+    Logger.log(lastId)
+    Logger.log(newId)
 
-    ws.appendRow(saved)
+    sheet.appendRow(saved)
 
+    Utilities.sleep(1000)
     lock.releaseLock();
 
-    data.push(saved)
-    return data;
+    return readAll(type)
   }
 }
 
 function updateOne(saved) {
 
   Logger.log(saved)
-   let lock = LockService.getScriptLock();
+  let lock = LockService.getScriptLock();
   lock.waitLock(30000);
 
   if (lock.hasLock()) {
 
-    Utilities.sleep(1000);
-    ws.getRange(getRow(saved[0]), 1, 1, 3).setValues([saved])
+  //  Utilities.sleep(1000);
+
+    idDetails = splitId(saved[0])
+    let idNumber = idDetails[0]
+    let sheet = idDetails[1]
+    let type = idDetails[2]
+
+    saved[0] = idNumber
+
+    sheet.getRange(getRow(sheet, idNumber), 1, 1, 3).setValues([saved])
 
     lock.releaseLock();
 
-    let data = readAll()
-    return data;
+    return readAll(type)
   }
 }
 
@@ -96,14 +144,20 @@ function deleteOne(id) {
 
   if (lock.hasLock()) {
 
-    Utilities.sleep(1000);
+    //Utilities.sleep(1000);
 
-    ws.deleteRow(getRow(id));
+    idDetails = splitId(id)
+    let idNumber = idDetails[0]
+    let sheet = idDetails[1]
+    let type = idDetails[2]
+
+    sheet.deleteRow(getRow(sheet, idNumber));
 
     lock.releaseLock();
 
-    let data = readAll()
-    return data;
+    Logger.log(readAll(type))
+    return readAll(type)
+
   }
 }
   

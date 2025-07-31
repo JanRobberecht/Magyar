@@ -1,9 +1,11 @@
 <script>
 
-var data = []
+var vocabulary = []
+var sentences = []
 var sort = ""
 var timer = 0
 var lastScrollTop = 0;
+var btnScreen = document.querySelector("#btn-screen")
 var fontSizes = {
   arrow: "1.0rem",
   th: "1.0rem",
@@ -55,51 +57,58 @@ const svgSent = `
 /***** CRUD Operations *****/
 /***************************/
 
-function readAll() {
+function readAll(type) {
 
   showSpinner()
 
-   google.script.run
+  google.script.run
   .withSuccessHandler(function(response){
-
-    data = response;
+    
     sort = "hungarianAZ"
-    filterAndSort()
-    closeSpinner()
-    closeInputBox()
+    evaluateFilterAndSort(response)
+
   })
-  .readAll();
+  .readAll(type);
 }
 
-function showAll(processed) {
+function showAll(type, processed) {
 
-  let tbody = document.querySelector("tbody")
-  tbody.innerHTML = ""
+  let container = type == "vocabulary" ? document.querySelector("#vocabulary tbody") : document.querySelector("#sentences")
+  container.innerHTML = ""
 
   processed.forEach(d => {
 
-     let row = document.createElement("tr");
-     row.id = "M"+d[0]
-     let boxHu = document.createElement("td");
-     boxHu.innerHTML = d[1]
-     boxHu.classList.add("dblclick-select")
-     let boxNl = document.createElement("td");
-     boxNl.innerHTML = d[2]
-     boxNl.classList.add("dblclick-select")
+    let row
+    if (type == "vocabulary") {
+      row = document.createElement("tr")
+      row.id = "V"+d[0]
+    } else {
+      row = document.createElement("div");
+      row.id = "S"+d[0]
+      row.classList.add("sentence-box")
+    }
+    row.classList.add("dblclick-select")
 
-     row.appendChild(boxHu)
-     row.appendChild(boxNl)
 
-     tbody.appendChild(row)
+    let boxHu = type == "vocabulary" ? document.createElement("td") : document.createElement("div");
+    boxHu.innerHTML = d[1]
+
+    let boxNl = type == "vocabulary" ? document.createElement("td") : document.createElement("div");
+    boxNl.innerHTML = d[2]
+
+    row.appendChild(boxHu)
+    row.appendChild(boxNl)
+
+    container.appendChild(row)
   })
 
   let elements = document.querySelectorAll("*");
-  // let elements = document.querySelectorAll("th, th.sort-arrow, td, input, div[contenteditable='true']");
   elements.forEach(el => {
     setFontSizeRem(el)
   })
 
 }
+
 
 function createOne() {
   showInputBox("first")
@@ -110,19 +119,22 @@ function selectOne(e) {
 
   showInputBox()
    
-  let rowId = e.target.closest("tr").id  
-  rowId = parseInt(rowId.slice(1)); 
+  /* put the id with letter in the button delete and save */
+  let rowId = e.target.closest(".dblclick-select").id  
   document.querySelector("#btn-save").dataset.clickedId = rowId;
   document.querySelector("#btn-delete").dataset.clickedId = rowId;
 
-  let indexInData = data.findIndex(row => row[0] == rowId)
+  /* show the data from the saved array by looking with only the numeral part if the id */
+  let data = btnScreen.value == 1 ? vocabulary : sentences ;
+  let rowIdNumber = parseInt(rowId.slice(1)); 
+  let indexInData = data.findIndex(row => row[0] == rowIdNumber)
   document.querySelector("#hu").innerHTML = data[indexInData][1]
   document.querySelector("#nl").innerHTML = data[indexInData][2]
 }
 
 function deleteOne() {
 
-  let confirmDelete = confirm("Weet je zeker dat je deze vertaling wilt verwijderen?");
+  let confirmDelete = confirm("Weet je zeker dat je dit wil verwijderen?");
   if (!confirmDelete) return;
 
   showSpinner();
@@ -131,33 +143,36 @@ function deleteOne() {
 
   google.script.run
   .withSuccessHandler(function(response){
-  
-    data = response;
-    filterAndSort()
-    closeSpinner()
-    closeInputBox()
+
+
+    evaluateFilterAndSort(response)
+ 
   })
   .deleteOne(id);
 }
 
 function saveOne() {
 
-  let hu = document.querySelector("#hu").textContent.trim();
-  let nl = document.querySelector("#nl").textContent.trim();
+  let huText = document.querySelector("#hu").textContent.trim();
+  let nlText = document.querySelector("#nl").textContent.trim();
 
-  if (!hu || !nl) {
+  if (!huText || !nlText) {
     alert("Beide velden, Magyar en Nederlands, moeten ingevuld zijn!");
     return;  // Stop opslaan als een veld leeg is
   }
 
+  let huHTML = document.querySelector("#hu").innerHTML;
+  let nlHTML = document.querySelector("#nl").innerHTML;
 
   let id = document.querySelector("#btn-save").dataset.clickedId
   let saved = []
+  let type = btnScreen.value == 1 ? "vocabulary" : "sentences"
+
 
   if (id) {
-    saved = [id, hu, nl]
+    saved = [id, huHTML, nlHTML]
   } else {
-    saved = ["", hu, nl]
+    saved = ["", huHTML, nlHTML]
   }
 
   showSpinner();
@@ -165,26 +180,47 @@ function saveOne() {
   google.script.run
   .withSuccessHandler(function(response){
 
-    data = response;
-    filterAndSort()
-    closeSpinner()
-    closeInputBox()
-
+    evaluateFilterAndSort(response)
 
   })
-  .saveOne(saved);
+  .saveOne(saved, type);
 }
 
 /***************************/
 /***** FILTER AND SORT *****/
 /***************************/
 
-function filterAndSort() {
+function evaluateFilterAndSort(response = "") {
+
+  /* runs when data is put in the search inout */
+  if (response == "") {
+    filterAndSort("vocabulary", vocabulary)
+    filterAndSort("sentences", sentences)
+  }
+
+  /* runs when CRUD operations are done */
+  if (response != "") {
+    if (response[0] != "") {
+    vocabulary = response[0];
+    filterAndSort("vocabulary", vocabulary)
+    }
+
+    if (response[1] != "") {
+      sentences = response[1]
+      filterAndSort("sentences", sentences)
+    }
+
+    closeSpinner()
+    closeInputBox()
+  }
+  
+}
+
+function filterAndSort(type, data) {
 
   let term = document.querySelector("#search-input").value
   let lowerTerm = term.toLowerCase()
   let processed = data
-
 
   if (term) {
     document.querySelector("#btn-box").innerHTML = svgFilter
@@ -192,47 +228,55 @@ function filterAndSort() {
       return row[1].toLowerCase().includes(lowerTerm) ||
             row[2].toLowerCase().includes(lowerTerm);
     });
+
   } else {
     document.querySelector("#btn-box").innerHTML = svgPen
   }
 
-  switch (sort) {
-    case "hungarianAZ":
-      processed.sort((a, b) => 
-        a[1].localeCompare(b[1], "hu", { sensitivity: 'base', ignorePunctuation: true }) * 1
-      );
-      break;
-    case "hungarianZA":
-      processed.sort((a, b) => 
-        a[1].localeCompare(b[1], "hu", { sensitivity: 'base', ignorePunctuation: true }) * -1
-      );
-      break;
-    case "dutchAZ":
-      processed.sort((a, b) => 
-        a[2].localeCompare(b[2], "nl", { sensitivity: 'base', ignorePunctuation: true }) * 1
-      );
-      break;
-    case "dutchZA":
-      processed.sort((a, b) => 
-        a[2].localeCompare(b[2], "nl", { sensitivity: 'base', ignorePunctuation: true }) * -1
-      );
-      break;
-    default:
-      processed.sort((a, b) => 
-        a[1].localeCompare(b[1], "hu", { sensitivity: 'base', ignorePunctuation: true }) * 1
-      );
+  if (type == "vocabulary") {
+
+    switch (sort) {
+      case "hungarianAZ":
+        processed.sort((a, b) => 
+          a[1].localeCompare(b[1], "hu", { sensitivity: 'base', ignorePunctuation: true }) * 1
+        );
+        break;
+      case "hungarianZA":
+        processed.sort((a, b) => 
+          a[1].localeCompare(b[1], "hu", { sensitivity: 'base', ignorePunctuation: true }) * -1
+        );
+        break;
+      case "dutchAZ":
+        processed.sort((a, b) => 
+          a[2].localeCompare(b[2], "nl", { sensitivity: 'base', ignorePunctuation: true }) * 1
+        );
+        break;
+      case "dutchZA":
+        processed.sort((a, b) => 
+          a[2].localeCompare(b[2], "nl", { sensitivity: 'base', ignorePunctuation: true }) * -1
+        );
+        break;
+      default:
+        processed.sort((a, b) => 
+          a[1].localeCompare(b[1], "hu", { sensitivity: 'base', ignorePunctuation: true }) * 1
+        );
+    }
   }
 
-  let amount = processed.length;
+ /* let amountVoc = processedVoc.length;
+  let amountSent = processedSent.length;
   let showMatches = document.querySelector("#found-search-input")
 
   if (term != "") {
     amount != 1 ? showMatches.innerHTML = amount+" overeenkomsten" : showMatches.innerHTML = 1+" overeenkomst" ;
   } else {
     showMatches.innerHTML = "";
-  }
+  }*/
  
-  showAll(processed)
+
+  showAll(type, processed)
+
+
 }
 
 function clearSortIndicators() {
@@ -243,21 +287,27 @@ function clearSortIndicators() {
 
 function updateSortIndicators(column, direction) {
   clearSortIndicators();
-  const th = document.querySelector(`th[data-column="${column}"]`);
+  let th = document.querySelector(`th[data-column="${column}"]`);
   if (th) {
     th.classList.add(direction);
   }
 }
 
 function evaluateSort(e) {
-  let th = e.target.matches("thead th") ? e.target : e.target.closest("thead th");
+
+  let th = e.target.closest("#vocabulary th");
   let column = parseInt(th.dataset.column);
+
+
   if (!column) return;
 
   // Bepaal huidige en nieuwe sorteer richting
   let currentDirection = th.dataset.sortDirection || "asc";
+
   let newDirection = currentDirection === "asc" ? "desc" : "asc";
   th.dataset.sortDirection = newDirection;
+  
+
 
   // Update globale sort variabele
   if (column === 1) {
@@ -267,8 +317,9 @@ function evaluateSort(e) {
     sort = newDirection === "asc" ? "dutchAZ" : "dutchZA";
   }
 
+
   updateSortIndicators(column, newDirection);
-  filterAndSort();
+  filterAndSort("vocabulary", vocabulary);
 }
 
 /*****************************/
@@ -294,7 +345,7 @@ function toggleScreens(e) {
     forceVocabularyToMaximumWidth()      
     document.querySelector("#btn-box").style.display = "block"
     document.querySelector("#grammar").style.display = "none"
-    document.querySelector("#sentencary").style.display = "none"
+    document.querySelector("#sentences").style.display = "none"
     button.innerHTML = svgGram
   }
   
@@ -303,7 +354,7 @@ function toggleScreens(e) {
     document.querySelector("#btn-box").style.display = "none";
     document.querySelector("#vocabulary").style.display = "none";
     document.querySelector("#grammar").style.display = "block";
-    document.querySelector("#sentencary").style.display = "none"
+    document.querySelector("#sentences").style.display = "none"
     button.innerHTML = svgSent
   }
 
@@ -312,7 +363,7 @@ function toggleScreens(e) {
     document.querySelector("#btn-box").style.display = "block";
     document.querySelector("#vocabulary").style.display = "none";
     document.querySelector("#grammar").style.display = "none"; 
-    document.querySelector("#sentencary").style.display = "block"
+    document.querySelector("#sentences").style.display = "block"
     button.innerHTML = svgVoc
   }
  
@@ -341,7 +392,7 @@ function toggleExpandButton(e) {
 
 function toggleAllChildrenDetails(e) {
 
-  console.log("HALLO")
+
 
   let button = e.target.closest(".btn-expand")
   let details = button.closest("details")
@@ -542,15 +593,14 @@ function clickEventHandler(e) {
   if (e.target.matches("#btn-save")) { saveOne() }
   if (e.target.matches("#btn-delete")) { deleteOne() }
   if (e.target.matches("#overlay")) { closeInputBox() }
-  if (e.target.matches("thead th") || e.target.closest("thead th")) { evaluateSort(e) }
-  if (e.target.matches("thead th") || e.target.closest("thead th")) { evaluateSort(e) }
+  if (e.target.closest("thead th")) { evaluateSort(e) }
   if (e.target.closest(".with-expand-button")) { toggleExpandButton(e) }
   if (e.target.closest(".btn-expand")) { toggleAllChildrenDetails(e) }
 }
 
 
 function doubleClickEventHandler(e) {
-  if (e.target.matches(".dblclick-select")) { selectOne(e) }
+  if (e.target.closest(".dblclick-select")) { selectOne(e) }
   if (e.target.matches("#search-input")) { e.target.value = ""; filterAndSort() }
   if (e.target.closest(".det-lvl3[open]")) {closeDetails(e)} // to close when the details are open
  
@@ -573,7 +623,7 @@ function keyDownEventHandler(e) {
 }
 
 function inputEventHandler(e) {
-   if (e.target.matches("#search-input")) { filterAndSort() }
+   if (e.target.matches("#search-input")) { evaluateFilterAndSort() }
 }
 
 function scrollEventHandler(e) {
@@ -610,7 +660,7 @@ function touchCancelEventHandler(e) {
  // if (e.target.matches(".dblclick-select")) { clearTimeout(timer) }
 } 
 
-document.addEventListener("DOMContentLoaded", () => { readAll() })
+document.addEventListener("DOMContentLoaded", () => { readAll("all") })
 document.getElementsByTagName("body")[0].addEventListener("click", clickEventHandler);
 document.getElementsByTagName("body")[0].addEventListener("dblclick", doubleClickEventHandler);
 document.getElementsByTagName("body")[0].addEventListener("input", inputEventHandler);

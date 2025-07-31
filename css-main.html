@@ -9,9 +9,9 @@
   --blueMicrosoftSemiTransparant: rgba(0, 120, 215, 0.67); // box shadow focus, floating buttons, button hover
   --bluePale: rgba(233, 240, 251, 1); // hover row, lvl2 background
   --grayVeryDark: rgba(51, 51, 51, 1); // text color
-  --grayDark: rgba(85, 85, 85, 1); // found search input, example nl
+  --grayDark: rgba(85, 85, 85, 1); // found search input
   --grayMedium: rgba(125, 125, 125, 1); // found search input, example nl
-  --grayCool: rgba(171, 172, 175, 1); // bullets, lvl3 text
+  //--grayCool: rgba(171, 172, 175, 1); // bullets, lvl3 text
   --grayLight: rgba(225, 228, 232, 1); // table border
   --grayVeryLightGrayBlue: rgba(245, 247, 250, 1); // body background
   --grayVeryPaleGray: rgba(250, 250, 250, 1); // inputs
@@ -81,7 +81,7 @@ thead {
 
 th, td {
   width: 50%;
-  border: 1px solid var(--grayLight);
+  border: 2px solid var(--grayLight);
   padding: 10px 14px;
   vertical-align: top;
   word-wrap: break-word;
@@ -372,7 +372,7 @@ li::before {
   position: absolute;
   left: 0;
   top: 0.1em;
-  color: var(--grayCool);
+  color: var(--grayMedium);
 //  font-size: 1em;
   line-height: 1.2;
 }
@@ -461,27 +461,45 @@ summary::before {
   display: none;
 }
 
+.det-lvl3 > div {
+  border-top: none;
+}
+
 .summ-lvl3 {
   background-color: var(--white);
-  color: var(--grayCool);
+  color: var(--grayMedium);
 }
 
 .explanation-box {
   padding: 10px 14px;
   background-color: var(--white);
-  border: 1px solid var(--grayLight);
+  border: 2px solid var(--grayLight);
 }
 
-.explanation-box .explanation-title {
+.explanation-box .explanation-title, td.explanation-title {
   color: var(--grayVeryDark);
   font-weight: 600;
 }
+
+td.explanation-title {
+ 
+  padding-bottom: 0;
+  border-bottom: none
+
+}
+
+td.explanation-data {
+   border-top: none
+
+}
+
+
 
 .explanation-box p {
   margin-top: 10px;
 }
 
-
+// this is the explanation)title
 .explanation-box p:first-child, .explanation-box p.no-margin {
   margin-top: 0
 }
