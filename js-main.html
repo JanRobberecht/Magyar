@@ -274,21 +274,49 @@ function filterAndSort(type, data) {
     }
   }
 
- /* let amountVoc = processedVoc.length;
-  let amountSent = processedSent.length;
-  let showMatches = document.querySelector("#found-search-input")
+  let amount
+  if (btnScreen.value == 1) {
+    amount = document.querySelectorAll("#vocabulary tbody > tr").length 
+  } else {
+    amount = document.querySelectorAll("#sentences > div").length 
+  }
 
+  let showMatches = document.querySelector("#found-search-input")
   if (term != "") {
     amount != 1 ? showMatches.innerHTML = amount+" overeenkomsten" : showMatches.innerHTML = 1+" overeenkomst" ;
   } else {
     showMatches.innerHTML = "";
-  }*/
+  }
  
 
   showAll(type, processed)
 
 
 }
+
+function countFilterAndSort() {
+
+  let term = document.querySelector("#search-input").value
+  let showMatches = document.querySelector("#found-search-input")
+  let amount;
+
+  if (term) {
+    if (btnScreen.value == 1) {
+      amount = document.querySelectorAll("#vocabulary tbody > tr").length 
+    } else {
+      amount = document.querySelectorAll("#sentences > div").length 
+    }
+
+    amount != 1 ? showMatches.innerHTML = amount+" overeenkomsten" : showMatches.innerHTML = 1+" overeenkomst" ;
+
+  } else {
+    showMatches.innerHTML = "";
+  }
+
+
+
+}
+
 
 function clearSortIndicators() {
   document.querySelectorAll("th").forEach(th => {
@@ -359,6 +387,7 @@ function toggleScreens(e) {
     document.querySelector("#btn-box").style.display = "block"
     document.querySelector("#grammar").style.display = "none"
     document.querySelector("#sentences").style.display = "none"
+    countFilterAndSort()
     button.innerHTML = svgGram
   }
   
@@ -377,6 +406,7 @@ function toggleScreens(e) {
     document.querySelector("#vocabulary").style.display = "none";
     document.querySelector("#grammar").style.display = "none"; 
     document.querySelector("#sentences").style.display = "block"
+    countFilterAndSort()
     button.innerHTML = svgVoc
   }
  
