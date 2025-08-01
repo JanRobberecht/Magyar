@@ -306,9 +306,9 @@ function countFilterAndSort() {
     amount = document.querySelectorAll("#vocabulary tbody > tr").length;
 
     if (term) {
-       amount != 1 ? showMatches.innerHTML = amount+" overeenkomsten" : showMatches.innerHTML = 1+" overeenkomst" ;
+      amount != 1 ? showMatches.innerHTML = amount+" overeenkomsten" : showMatches.innerHTML = 1+" overeenkomst" ;
     } else {
-      showMatches.innerHTML = amount+" woorden"
+      amount != 1 ? showMatches.innerHTML = amount+" woorden" : showMatches.innerHTML = 1+" woord" ;
     }
   } 
   
@@ -318,7 +318,7 @@ function countFilterAndSort() {
     if (term) {
       amount != 1 ? showMatches.innerHTML = amount+" overeenkomsten" : showMatches.innerHTML = 1+" overeenkomst" ;
     } else {
-      showMatches.innerHTML = amount+" zinnen"
+      amount != 1 ? showMatches.innerHTML = amount+" zinnen" : showMatches.innerHTML = 1+" zin" ;
     }
   } 
   
@@ -707,11 +707,11 @@ function scrollEventHandler(e) {
 function touchStartEventHandler(e) {
  /* if (e.target.matches(".dblclick-select")) { 
     timer = setTimeout(() => { selectOne(e) }, 750);
-  }*/
+  }
 
   if (e.target.matches("#search-input")) { 
     timer = setTimeout(() => { e.target.value = "";  filterAndSort() }, 750);
-  }
+  }*/
 }
 
 function touchEndEventHandler(e) {
