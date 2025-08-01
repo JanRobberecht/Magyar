@@ -94,18 +94,13 @@ function createOne(saved, type) {
 
     let sheet = type == "vocabulary" ? wsVocabulary : wsSentences;
     let data = type == "vocabulary" ? readAll(type)[0] : readAll(type)[1];
-    let lastId = data[data.length - 1][0]
+    let lastId = data == "" ? 0 : data[data.length - 1][0]
     let newId = parseInt(lastId) +1
     saved[0] = newId
 
-    Logger.log(sheet)
-    Logger.log(data)
-    Logger.log(lastId)
-    Logger.log(newId)
-
     sheet.appendRow(saved)
 
-    Utilities.sleep(1000)
+    //Utilities.sleep(1000)
     lock.releaseLock();
 
     return readAll(type)

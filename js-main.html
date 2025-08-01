@@ -85,15 +85,26 @@ function showAll(type, processed) {
     } else {
       row = document.createElement("div");
       row.id = "S"+d[0]
-      row.classList.add("sentence-box")
+      row.classList.add("explanation-box")
     }
     row.classList.add("dblclick-select")
 
-
-    let boxHu = type == "vocabulary" ? document.createElement("td") : document.createElement("div");
+    let boxHu
+    if (type == "vocabulary") {
+      boxHu = document.createElement("td")
+    } else {
+      boxHu = document.createElement("div")
+      boxHu.classList.add("example-hu")
+    }
     boxHu.innerHTML = d[1]
 
-    let boxNl = type == "vocabulary" ? document.createElement("td") : document.createElement("div");
+    let boxNl
+    if (type == "vocabulary") {
+      boxNl = document.createElement("td")
+    } else {
+      boxNl = document.createElement("div")
+      boxNl.classList.add("example-nl")
+    }
     boxNl.innerHTML = d[2]
 
     row.appendChild(boxHu)
@@ -326,6 +337,8 @@ function evaluateSort(e) {
 /***** LAYOUT OPERATIONS *****/
 /*****************************/
 
+
+
 function toggleScreens(e) {
 
   
@@ -450,6 +463,15 @@ function forceVocabularyToMaximumWidth() {
   // Of per kolom
   const ths = table.querySelectorAll("th, td");
   ths.forEach(cell => cell.style.width = "50%");
+
+}
+
+function format(e) {
+
+  let button = e.target.closest(".formatting")
+  let command = button.id == "btn-list" ? "insertUnorderedList" : "bold" ;
+  let value = button.value /* only for colors */
+  document.execCommand(command, false, value)
 
 }
 
@@ -590,6 +612,7 @@ function clickEventHandler(e) {
   if (e.target.closest("#btn-screen")) { toggleScreens(e) }
   if (e.target.matches("#btn-increase")) { increaseFontSizeRem() }
   if (e.target.matches("#btn-decrease")) { decreaseFontSizeRem() }
+  if (e.target.closest(".formatting")) { format(e) }
   if (e.target.matches("#btn-save")) { saveOne() }
   if (e.target.matches("#btn-delete")) { deleteOne() }
   if (e.target.matches("#overlay")) { closeInputBox() }
@@ -608,7 +631,7 @@ function doubleClickEventHandler(e) {
 
 function keyDownEventHandler(e) {
 
-  let btnSave = document.querySelector("#btn-save");
+ /* let btnSave = document.querySelector("#btn-save");
   let btnSaveStyle = window.getComputedStyle(btnSave);
 
   let spinner = document.querySelector("#spinner");
@@ -619,7 +642,7 @@ function keyDownEventHandler(e) {
     if (btnSaveStyle.display == "block" && spinnerStyle.display == "none") {
       saveOne()
     }
-  }
+  }*/
 }
 
 function inputEventHandler(e) {

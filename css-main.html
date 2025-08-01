@@ -62,6 +62,7 @@ b {
 table {
   width: 100%;
   border-collapse: collapse;
+  border: 0px;
   table-layout: fixed; /* equal column widths */
   //overflow-x: hidden; /* eventueel */
   background: var(--white);
@@ -90,6 +91,8 @@ th, td {
   transition: background-color 0.2s ease;
   text-align: left; 
 }
+
+
 
 th .sort-arrow {
   margin-left: 6px;
@@ -411,6 +414,8 @@ li::before {
 
 summary {
   padding: 10px 14px;
+  border-left: 2px solid var(--grayLight);
+  border-right: 2px solid var(--grayLight);
   display: flex;
   align-items: center;
   list-style: none;
@@ -488,18 +493,42 @@ summary::before {
 }
 
 .det-lvl3 > div {
-  border-top: none;
+ // border-top: none;
 }
 
 .summ-lvl3 {
   background-color: var(--white);
   color: var(--grayMedium);
+  border-bottom: 2px solid var(--grayLight);
 }
 
 .explanation-box {
   padding: 10px 14px;
   background-color: var(--white);
-  border: 2px solid var(--grayLight);
+  border-right: 2px solid var(--grayLight);
+  border-left: 2px solid var(--grayLight);
+  border-top: 2px solid var(--grayLight);
+  border-bottom: none;
+}
+
+#grammar .det-lvl3 > .explanation-box:first-of-type {
+  border-top: none;
+}
+
+#grammar .det-lvl3 > .explanation-box:last-of-type {
+  border-bottom: 2px solid var(--grayLight);
+}
+
+#sentences .explanation-box:last-of-type {
+  border-bottom: 2px solid var(--grayLight);
+}
+
+#sentences .explanation-box > div:first-of-type {
+  padding-bottom: 3px;
+}
+
+#sentences .explanation-box > div:last-of-type {
+  padding-top: 3px;
 }
 
 .explanation-box .explanation-title, td.explanation-title {
@@ -518,8 +547,6 @@ td.explanation-data {
    border-top: none
 
 }
-
-
 
 .explanation-box p {
   margin-top: 10px;
@@ -541,6 +568,22 @@ td.explanation-data {
 
 .explanation-box .red {
   color: var(--redDark)
+}
+
+/*********************/
+/***** SENTENCES *****/
+/*********************/
+
+#sentences .explanation-box:last-of-type {
+  border-bottom: 2px solid var(--grayLight);
+}
+
+#sentences .explanation-box > div:first-of-type {
+  padding-bottom: 3px;
+}
+
+#sentences .explanation-box > div:last-of-type {
+  padding-top: 3px;
 }
 
 /*******************/
