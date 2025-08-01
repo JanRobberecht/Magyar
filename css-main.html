@@ -19,13 +19,19 @@
   --greenForest: rgba(30, 126, 52, 1); // #btn-save:hover
   --greenSuccess: rgba(40, 167, 69, 1); // #btn-save default
   --greenPaleMint: rgba(230, 244, 234, 1); // #btn-save:hover
+  --redCrimsonSemiTransparent: rgba(158, 40, 40, 0.7); // #btn-box.filter-symbol
   --redDark: rgba(167, 29, 42, 1); // #btn-delete:hover
   --redDutch: rgba(215, 20, 26, 1); // NL red
   --redVivid: rgba(200, 16, 46, 1); // HU red
   --redCrimson: rgba(220, 53, 69, 1); // #btn-delete
+  --redAppleSemiTransparent: rgba(215, 60, 60, 0.67); // #btn-box.filter-symbol hover
   --redSoftPink: rgba(249, 230, 232, 1); // #btn-delete:hover
   --white: rgba(255, 255, 255, 1); // flag white, input focus
   --whiteTransparant: rgba(255, 255, 255, 0.4); // btn-expand hover, spinner-bg
+}
+
+window, html, body {
+  overscroll-behavior: none;
 }
 
 /* Reset and base */
@@ -157,6 +163,10 @@ button svg * {
   z-index: 200;
 }
 
+#btn-box.filter-symbol {
+  background: var(--redAppleSemiTransparent);
+
+}
 
 
 #btn-box.pressed,
@@ -171,6 +181,11 @@ button svg * {
 #btn-box {
   bottom: 72px;
   right: 16px;
+}
+
+#btn-box.filter-symbol.pressed {
+  background: var(--redCrimsonSemiTransparent);
+
 }
 
 #btn-screen {
@@ -641,6 +656,11 @@ footer {
     background: var(--blueMicrosoftSemiTransparant);
     opacity: 1;
     box-shadow: 0 6px 14px var(--blackMediumTransparant);
+  }
+
+  #btn-box.filter-symbol:hover {
+    background: var(--redCrimsonSemiTransparent);
+
   }
 }
 

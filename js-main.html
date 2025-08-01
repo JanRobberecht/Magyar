@@ -233,8 +233,13 @@ function filterAndSort(type, data) {
   let lowerTerm = term.toLowerCase()
   let processed = data
 
+  console.log("DATA BEFORE")
+  console.log(data)
+
+
   if (term) {
     document.querySelector("#btn-box").innerHTML = svgFilter
+    document.querySelector("#btn-box").classList.add("filter-symbol");
     processed = data.filter(row => {
       return row[1].toLowerCase().includes(lowerTerm) ||
             row[2].toLowerCase().includes(lowerTerm);
@@ -242,7 +247,14 @@ function filterAndSort(type, data) {
 
   } else {
     document.querySelector("#btn-box").innerHTML = svgPen
+    document.querySelector("#btn-box").classList.remove("filter-symbol");
   }
+
+  console.log("DATA AFTER")
+  console.log(data)
+  console.log("PROCESSED")
+  console.log(processed)
+
 
   if (type == "vocabulary") {
 
@@ -274,22 +286,11 @@ function filterAndSort(type, data) {
     }
   }
 
-  let amount
-  if (btnScreen.value == 1) {
-    amount = document.querySelectorAll("#vocabulary tbody > tr").length 
-  } else {
-    amount = document.querySelectorAll("#sentences > div").length 
-  }
-
-  let showMatches = document.querySelector("#found-search-input")
-  if (term != "") {
-    amount != 1 ? showMatches.innerHTML = amount+" overeenkomsten" : showMatches.innerHTML = 1+" overeenkomst" ;
-  } else {
-    showMatches.innerHTML = "";
-  }
- 
-
   showAll(type, processed)
+
+  countFilterAndSort()
+
+
 
 
 }
@@ -300,20 +301,27 @@ function countFilterAndSort() {
   let showMatches = document.querySelector("#found-search-input")
   let amount;
 
-  if (term) {
-    if (btnScreen.value == 1) {
-      amount = document.querySelectorAll("#vocabulary tbody > tr").length 
+
+  if (btnScreen.value == 1) {
+    amount = document.querySelectorAll("#vocabulary tbody > tr").length;
+
+    if (term) {
+       amount != 1 ? showMatches.innerHTML = amount+" overeenkomsten" : showMatches.innerHTML = 1+" overeenkomst" ;
     } else {
-      amount = document.querySelectorAll("#sentences > div").length 
+      showMatches.innerHTML = amount+" woorden"
     }
+  } 
+  
+  if (btnScreen.value == 3) {
+    amount = document.querySelectorAll("#sentences > div").length;
 
-    amount != 1 ? showMatches.innerHTML = amount+" overeenkomsten" : showMatches.innerHTML = 1+" overeenkomst" ;
-
-  } else {
-    showMatches.innerHTML = "";
-  }
-
-
+    if (term) {
+      amount != 1 ? showMatches.innerHTML = amount+" overeenkomsten" : showMatches.innerHTML = 1+" overeenkomst" ;
+    } else {
+      showMatches.innerHTML = amount+" zinnen"
+    }
+  } 
+  
 
 }
 
@@ -654,7 +662,7 @@ function clickEventHandler(e) {
 
 function doubleClickEventHandler(e) {
   if (e.target.closest(".dblclick-select")) { selectOne(e) }
-  if (e.target.matches("#search-input")) { e.target.value = ""; filterAndSort() }
+  if (e.target.matches("#search-input")) { e.target.value = ""; filterAndSort("vocabulary", vocabulary);  filterAndSort("sentences", sentences) }
   if (e.target.closest(".det-lvl3[open]")) {closeDetails(e)} // to close when the details are open
  
 }
@@ -674,6 +682,7 @@ function keyDownEventHandler(e) {
     }
   }*/
 }
+
 
 function inputEventHandler(e) {
    if (e.target.matches("#search-input")) { evaluateFilterAndSort() }
@@ -716,7 +725,7 @@ function touchCancelEventHandler(e) {
 document.addEventListener("DOMContentLoaded", () => { readAll("all") })
 document.getElementsByTagName("body")[0].addEventListener("click", clickEventHandler);
 document.getElementsByTagName("body")[0].addEventListener("dblclick", doubleClickEventHandler);
-document.getElementsByTagName("body")[0].addEventListener("input", inputEventHandler);
+document.getElementsByTagName("body")[0].addEventListener("input", inputEventHandler)
 document.getElementsByTagName("body")[0].addEventListener("keydown", keyDownEventHandler);
 document.getElementsByTagName("body")[0].addEventListener("touchstart", touchStartEventHandler);
 document.getElementsByTagName("body")[0].addEventListener("touchend", touchEndEventHandler);
