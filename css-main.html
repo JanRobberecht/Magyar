@@ -93,7 +93,7 @@ table {
   table-layout: fixed; /* equal column widths */
   //overflow-x: hidden; /* eventueel */
   background: var(--white);
-  box-shadow: 0 4px 12px var(--blackLightTransparant);
+ // box-shadow: 0 4px 12px var(--blackLightTransparant);
 }
 
 /* Table headers */
@@ -467,16 +467,6 @@ summary::before {
 }
 
 
-
-/*.det-lvl1[open] > .summ-lvl1 button { 
-  display: flex;
-  margin-left: auto
-}
-*/
-//CSS can't style descendants of <summary> based on the parent <details[open]> state, due to limitations in the spec and browser support.
-
-
-
 /* Draai de pijl als details open is */
 .det-lvl1[open] > .summ-lvl1::before {
   transform: rotate(90deg);
@@ -510,17 +500,10 @@ summary::before {
 }
 
 
-
-
-
-
 .det-lvl3[open] > .summ-lvl3 {
   display: none;
 }
 
-.det-lvl3 > div {
- // border-top: none;
-}
 
 .summ-lvl3 {
   background-color: var(--white);
@@ -537,28 +520,8 @@ summary::before {
   border-bottom: none;
 }
 
-#grammar .det-lvl3 > .explanation-box:first-of-type {
-  border-top: none;
-}
-
-#grammar .det-lvl3 > .explanation-box:last-of-type {
-  border-bottom: 2px solid var(--grayLight);
-}
-
-#sentences .explanation-box:last-of-type {
-  border-bottom: 2px solid var(--grayLight);
-}
-
-#sentences .explanation-box > div:first-of-type {
-  padding-bottom: 3px;
-}
-
-#sentences .explanation-box > div:last-of-type {
-  padding-top: 3px;
-}
-
 .explanation-box .explanation-title, td.explanation-title {
-  color: var(--blueMicrosoft);;
+  color: var(--blueMicrosoft);
   font-weight: 600;
 }
 
@@ -588,16 +551,29 @@ td.explanation-data {
 } 
 
 
-
-span.suffix-title {
-  display: inline-block;
-  width: 130px;
-}
-
 span.verb-pers {
   display: inline-block;
   width: 35px;
   color: var(--grayMedium)
+}
+
+/*******************/
+/***** GRAMMAR *****/
+/*******************/
+
+#grammar .det-lvl3 > .explanation-box:first-of-type {
+  border-top: none;
+}
+
+#grammar .det-lvl3 > .explanation-box:last-of-type {
+  border-bottom: 2px solid var(--grayLight);
+}
+
+
+/***** VERBS *****/
+
+#verbs td {
+  border-top: none
 }
 
 /*********************/
